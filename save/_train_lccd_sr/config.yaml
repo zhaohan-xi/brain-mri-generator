@@ -1,0 +1,72 @@
+train_dataset:
+  dataset:
+    name: paired-image-folders
+    args:
+      root_path_1: ../TUMSyn/train_img_M1.txt
+      root_path_2: ../TUMSyn/train_img_M2.txt
+      prompt_D1_M1: ../TUMSyn/Experimental_data/train_HCPD_T1w_prompt.txt
+      prompt_D1_M2: ../TUMSyn/Experimental_data/train_HCPD_T2w_prompt.txt
+      repeat: 1
+      cache: in_memory
+  wrapper:
+    name: sr-implicit-paired
+    args:
+      scale_min: 1
+      scale_max: 3
+      augment: true
+      sample_q: 8000
+  batch_size: 16
+val_dataset:
+  dataset:
+    name: paired-image-folders
+    args:
+      root_path_1: ../TUMSyn/test_img_M1.txt
+      root_path_2: ../TUMSyn/test_img_M2.txt
+      prompt_D1_M1: ../TUMSyn/Experimental_data/test_HCPD_T1w_prompt.txt
+      prompt_D1_M2: ../TUMSyn/Experimental_data/test_HCPD_T2w_prompt.txt
+      repeat: 1
+      cache: in_memory
+  wrapper:
+    name: sr-implicit-paired
+    args:
+      scale_min: 1
+      scale_max: 3
+      augment: true
+      sample_q: 8000
+  batch_size: 16
+model_G:
+  name: lccd
+  args:
+    encoder_spec:
+      name: resencoder-256
+      args:
+        no_upsampling: true
+    no_imnet: false
+model_D:
+  name: NLDiscri
+  args:
+    in_dim: 8000
+    out_dim: 864
+    hidden_list:
+    - 256
+    - 256
+    - 256
+    - 256
+optimizer_G:
+  name: adam
+  args:
+    lr: 0.0001
+optimizer_D:
+  name: adam
+  args:
+    lr: 0.0001
+epoch_max: 300
+multi_step_lr:
+  milestones:
+  - 100
+  - 150
+  - 200
+  - 250
+  gamma: 0.5
+epoch_val: 10
+epoch_save: 10
